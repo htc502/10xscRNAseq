@@ -1,0 +1,5 @@
+{
+    "data":"/rsrch3/scratch/genomic_med/ghan1/HumamLab/AS-10X-Lung_PM1108/filtered_bc_matrix",
+    "min.cells":3,
+    "min.features":200
+}
