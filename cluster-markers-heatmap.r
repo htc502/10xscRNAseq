@@ -34,6 +34,11 @@ option_list = list(
     make_option(c("-m","--markers"),
                 type = 'character',
                 help = 'markers table file (by findallmarkers)',
+                metavar = 'character'),
+    make_option(c("-t","--table"),
+                type = 'logical',
+                default = T,
+                help = 'whether to output marker genes expression matrix [default = %default]',
                 metavar = 'character')
 );
 
@@ -60,15 +65,15 @@ genes = unique(markers.top$gene)
 
 snn.data <- readRDS(opt$data)
 snn.data = ScaleData(snn.data, features = genes)
-expcount = GetAssayData(snn.data,slot = 'scale.data')
-genes = intersect(genes, rownames(expcount))
-expcount = expcount[ genes, ] 
+expcount0 = GetAssayData(snn.data,slot = 'scale.data')
+genes = intersect(genes, rownames(expcount0))
+expcount = expcount0[ genes, ] 
 expcount[ expcount > 2] = 2
 expcount[ expcount < -2] = -2
 
 sDat0 = data.frame(ID = rownames(snn.data@meta.data),
-                  snn.data@meta.data[, c('orig.ident','seurat_clusters')],
-                  stringsAsFactors = F) %>%
+                   snn.data@meta.data[, c('orig.ident','seurat_clusters')],
+                   stringsAsFactors = F) %>%
     mutate(seurat_clusters = as.factor(as.numeric(seurat_clusters))) %>%
     group_by(seurat_clusters) %>% sample_frac(size = param$sample.frac)
 sDat = as.data.frame(sDat0[,  c('orig.ident','seurat_clusters')])
@@ -99,3 +104,8 @@ pheatmap(expcount[markers.top$gene,rownames(sDat)],
          height = param$height,width = param$width,
          fontsize_row = param$fontSize,
          filename = opt$out)
+if(opt$t) {
+    mt = GetAssayData(snn.data);mt = t(as.matrix(mt[markers.top$gene,,drop = F]))
+    df = data.frame(ID = rownames(mt), mt, stringsAsFactor = F)
+    write_tsv(df, file.path(dirname(opt$o),'markersExpression.tsv'))
+}
