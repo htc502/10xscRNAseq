@@ -51,7 +51,7 @@ npc = param$npc
 umap.obj  <- RunUMAP(object = snn.obj,
                      reduction = "pca",
                      dims = 1:npc,
-                     min_dist = param$dist,n.neighbor = param$nneigh
+                     min.dist = param$dist,n.neighbor = param$nneigh
                      )
 
 saveRDS(umap.obj,file = opt$out)
