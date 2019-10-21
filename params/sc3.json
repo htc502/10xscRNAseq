@@ -1,0 +1,9 @@
+{
+    "p_val":0.01,
+    "auroc":0.85,
+    "annot":["seurat_clusters"],
+    "ks_min":2,
+    "ks_max":15,
+    "ks_step":1,
+    "ks_ncore":1
+}
