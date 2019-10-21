@@ -1,14 +1,16 @@
 ##enviroment preparation: install app; module load modules etc
-module load python/3.7.3-anaconda
-module load R/3.6.0
+# module load python/3.7.3-anaconda
+# module load R/3.6.0
+
+##require python 3.7 and R 3.6
 
 ##setup enviroment variables
 ResD='todoFill'
 srcD='todoFill'
 paramD=${srcD}/params
-
+wd='todoFill'
 ##alias
-runR='Rscript --no-save'
+runR="Rscript --no-save -e \"setwd($wd); packrat::on()\""
 
 ##do the job
 # ${runR} ${srcD}/load-cellranger.r -c ${paramD}/load-cellranger.json -o ${ResD}/loadcellranger.rds

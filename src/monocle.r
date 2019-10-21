@@ -103,7 +103,7 @@ for(var in param$color_by) {
 }
 pdf(paste0(opt$`out-prefix`,'monocle-plots.pdf'))
 for(i in length(plots))
-    print(plots[[i]]
-          dev.off()
-          saveRDS(cds,file= paste0(opt$`out-prefix`,'.monocleObj.rds'))
+    print(plots[[i]])
+dev.off()
+saveRDS(cds,file= paste0(opt$`out-prefix`,'.monocleObj.rds'))
 
