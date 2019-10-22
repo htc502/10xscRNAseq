@@ -6,6 +6,8 @@
 #'
 #' determine number of PCs to use
 #' 
+options(warn = -1)
+print('----determinePC----')
 
 ##libraries
 library(optparse)
@@ -53,3 +55,4 @@ norm.data <- ProjectDim(object = norm.data)
 DimHeatmap(object = norm.data, dims = 1:12, cells = 500, balanced = TRUE)
 ElbowPlot(object = norm.data,ndims = 50)
 dev.off()
+print('----end----')
