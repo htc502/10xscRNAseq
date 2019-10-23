@@ -6,14 +6,13 @@
 #'
 #' infer copy number changes
 #' 
-options(warn=-1)
-
-library(optparse)
-library(readr)
-library(rjson)
-library(Seurat)
-library(infercnv)
-
+suppressMessages({library(optparse);
+library(readr);
+library(dplyr);
+library(rjson);
+library(Seurat);
+library(infercnv)})
+print('----infercnv----')
 ##CLI parsing
 option_list = list(
     make_option(c("-d", "--data"),
@@ -49,16 +48,28 @@ if(is.null(opt$param)) {
     stop("json file name (containing user defined genes) must be provided", call. = F)
 }
 ##load param
+print('...loading data...')
 param <- fromJSON(file = opt$param)
 obj <- readRDS(opt$d)
+##check if only subset of cells are to be used
+cells <- read_tsv(param$celltype,col_names = F) %>%.$X1
+if(! identical(cells, rownames(obj))) {
+    print(paste0('subseting seurat object using cells provided in ',
+                 basename(param$celltype)))
+    obj = subset(obj, cells = cells)
+}
+
 infercnvobj = CreateInfercnvObject(raw_counts_matrix=GetAssayData(obj),
                                    annotations_file=param$celltype,
                                    delim="\t",
                                    gene_order_file=param$geneorder,
                                    ref_group_names=param$refcell)
 
+print('...run infercnv...')
 infercnvobj = infercnv::run(infercnvobj, cutoff=0.1,
-                            out_dir=basename(opt$`out-prefix`),
+                            out_dir=opt$`out-prefix`,
                             num_threads = opt$nthreads,
                             denoise=T,HMM=T,cluster_by_groups=T)
+print('...save results...')
 saveRDS(infercnvobj, file = paste0(opt$`out-prefix`,'.rds'))
+print('----end----')

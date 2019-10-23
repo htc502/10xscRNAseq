@@ -6,13 +6,14 @@
 #'
 #' export gene expression matrix for user defined genes
 #' 
-
+options(warn = -1)
+print('----exp-export----')
 ##libraries
-library(optparse)
-library(rjson)
-library(Seurat)
-library(readr)
-library(dplyr)
+suppressMessages({library(optparse);
+library(rjson);
+library(Seurat);
+library(readr);
+library(dplyr)})
 
 ##CLI parsing
 option_list = list(
@@ -47,10 +48,13 @@ if(is.null(opt$param)) {
 param <- fromJSON(file = opt$param)
 
 ##Load data
+print('...Loading data...')
 genes = param$gene
 obj = readRDS(opt$d)
 mt = GetAssayData(obj);
 genes = intersect(genes, rownames(mt))
 mt = t(as.matrix(mt[genes,,drop = F]))
 df = data.frame(ID = rownames(mt), mt, stringsAsFactors = F)
+print('...saving results...')
 write_tsv(df, file.path(opt$o))
+print('----end----')

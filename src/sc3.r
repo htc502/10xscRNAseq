@@ -6,16 +6,15 @@
 #'
 #' SC3 clustering
 #' 
-options(warn=-1)
-
-library(optparse)
-library(readr)
-library(rjson)
-library(Seurat)
-library(Matrix)
-library(SC3);library(scater)
-library(SingleCellExperiment)
-
+suppressMessages({
+    library(optparse)
+    library(readr)
+    library(rjson)
+    library(Seurat)
+    library(Matrix)
+    library(SC3);library(scater)
+    library(SingleCellExperiment)})
+print('----SC3----')
 ##CLI parsing
 option_list = list(
     make_option(c("-d", "--data"),
@@ -26,6 +25,11 @@ option_list = list(
                 type = 'character',
                 default = 'sc3',
                 help = 'prefix of output files [default = %default]',
+                metavar = 'character'),
+    make_option(c('--ncore'),
+                type = 'integer',
+                default = 1,
+                help = 'number of cpus to use [default = %default]',
                 metavar = 'character'),
     make_option(c('-c','--param'),
                 type = 'character',
@@ -48,6 +52,7 @@ if(is.null(opt$param)) {
 ##load param
 param <- fromJSON(file = opt$param)
 ##Load data
+print('...load data...')
 ks = seq(param$ks_min,param$ks_max,by = param$ks_step)
 ##check if sc3 obj already exists
 if(file.exists(paste0(opt$`out-prefix`, '.sceobj.rds'))) {
@@ -64,6 +69,7 @@ if(file.exists(paste0(opt$`out-prefix`, '.sceobj.rds'))) {
     log2count = GetAssayData(obj)
     count = count[, rownames(ann)]
     log2count = log2count[, rownames(ann)]
+    print('...perform sc3 clustering...')
     sce <- SingleCellExperiment(
         assays = list(
             counts = as.matrix(count),
@@ -72,7 +78,7 @@ if(file.exists(paste0(opt$`out-prefix`, '.sceobj.rds'))) {
         colData = ann
     )
     rowData(sce)$feature_symbol <- rownames(sce)
-    sce <- sc3(sce, ks = ks, biology = T, n_cores = param$ncore)
+    sce <- sc3(sce, ks = ks, biology = T, n_cores = opt$ncore)
     saveRDS(sce, paste0(opt$`out-prefix`, '.sceobj.rds'))
 
     pdf(paste0(opt$`out-prefix`, '.scesilhouetteplot.pdf'))
@@ -96,9 +102,12 @@ organise_marker_genes <- function(object, k, p_val, auroc,add.genes = NULL) {
         d <- rbind(d, tmp)
     }
     add.genes = intersect(dat0$feature_symbol, add.genes)
-    if(!is.null(add.genes)) {
+    ##remove genes if already show up in markers
+    add.genes = setdiff(add.genes, d$feature_symbol)
+    ## print(paste0('add.genes:',add.genes))
+    if(0 != length(add.genes)) {
         add.tmp = dat0[ dat0$feature_symbol %in% add.genes,]
-        add.tmp[,1] = 404 ## for user defined
+        add.tmp[,1] = 404 ## for user defined(show in the end)
         d = rbind(d, add.tmp)
     }
     if(nrow(dat) > 0) {
@@ -107,7 +116,7 @@ organise_marker_genes <- function(object, k, p_val, auroc,add.genes = NULL) {
         return(NULL)
     }
 }
-markers_for_heatmap1 <- function(markers,trim = T) {
+markers_for_heatmap1 <- function(markers,trim = T,add.genes = NULL) {
     res <- NULL
     for (i in unique(markers[, 1])) {
         tmp <- markers[markers[, 1] == i, ]
@@ -117,6 +126,11 @@ markers_for_heatmap1 <- function(markers,trim = T) {
             res <- rbind(res, tmp)
         }
     }
+    ##get add.genes back if they are removed
+    add.genes = setdiff(add.genes, res$feature_symbol)
+    add.genes = intersect(add.genes, markers$feature_symbol)
+    if(0 != length(add.genes))
+        res = rbind(res, markers[ markers$feature_symbol %in% add.genes,,drop = F])
     return(res)
 }
 make_col_ann_for_heatmaps <- function(object, show_pdata) {
@@ -223,7 +237,7 @@ my.sc3_plot_markers <- function(object, k, auroc = .85, p.val = 0.01, show_pdata
                                    rownames(qual_col_pals)))
 
         ## get top 10 marker genes of each cluster
-        markers <- markers_for_heatmap1(markers,trim = top10)
+        markers <- markers_for_heatmap1(markers,trim = top10,add.genes = add.genes)
 
         row.ann <- data.frame(Cluster = factor(markers[, 1],
                                                levels = unique(markers[, 1])))
@@ -266,6 +280,7 @@ my.sc3_plot_markers <- function(object, k, auroc = .85, p.val = 0.01, show_pdata
 }
 ##user added markers
 genes = param$user.genes
+print('...generate plots...')
 for(k in ks) {
     my.sc3_plot_markers(
         sce, k = k ,
@@ -273,11 +288,11 @@ for(k in ks) {
             paste0("sc3_",k,"_clusters"), 
             paste0("sc3_",k,"_log2_outlier_score"), 
             param$annot
-        ),top10 = T,
+        ),top10 = T,auroc = param$auroc, p.val = param$p_val,
         add.genes = genes,fname = paste0(opt$`out-prefix`,'k',k,'plot.pdf'),
         height =12,width = 16)
     markers = organise_marker_genes(sce, k = k,p_val = param$p_val,
                                     auroc = param$auroc)
     write_tsv(data.frame(markers), paste0(opt$`out-prefix`,'k',k,'markers.tsv'))
 }
-
+print('----end----')
