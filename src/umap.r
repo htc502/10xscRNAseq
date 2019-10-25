@@ -8,11 +8,11 @@
 #' 
 
 ##libraries
-library(optparse)
+suppressMessages({library(optparse)
 library(readr)
 library(rjson)
-library(Seurat)
-
+library(Seurat)})
+print('---umap embedding---')
 ##CLI parsing
 option_list = list(
     make_option(c("-d", "--data"),
@@ -55,3 +55,4 @@ umap.obj  <- RunUMAP(object = snn.obj,
                      )
 
 saveRDS(umap.obj,file = opt$out)
+print('---end---')

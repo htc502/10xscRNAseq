@@ -8,13 +8,13 @@
 #' 
 
 ##libraries
-library(optparse)
+suppressMessages({library(optparse)
 library(readr)
 library(rjson)
 library(Seurat)
 library(dplyr)
-library(ggplot2)
-
+library(ggplot2)})
+print('---visualize embeding---')
 ##CLI parsing
 option_list = list(
     make_option(c("-d", "--data"),
@@ -84,3 +84,4 @@ if(!is.null(param$colorBy)) {
 if(opt$t){
     write_tsv(meta, file.path(dirname(opt$o),'visualization_coordinates.tsv'))
 }
+print('---end---')

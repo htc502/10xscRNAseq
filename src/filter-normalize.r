@@ -8,10 +8,10 @@
 #' 
 
 ##libraries
-library(optparse)
+suppressMessages({library(optparse)
 library(rjson)
-library(Seurat)
-
+library(Seurat)})
+print('---filter&normalization---')
 ##CLI parsing
 option_list = list(
     make_option(c("-d", "--data"),
@@ -60,4 +60,4 @@ normalized.data <- NormalizeData(object = filtered.data,
 ##save data
 print('saving data')
 saveRDS(normalized.data, file = opt$out)
-
+print('---end---')

@@ -8,11 +8,11 @@
 #' 
 
 ##libraries
-library(optparse)
+suppressMessages({library(optparse)
 library(readr)
 library(rjson)
-library(Seurat)
-
+library(Seurat)})
+print('---snn clustering---')
 ##CLI parsing
 option_list = list(
     make_option(c("-d", "--data"),
@@ -62,3 +62,4 @@ norm.data <- FindNeighbors(object = norm.data, dims = 1:npc,k.param = param$k)
 snn.obj <- FindClusters(object = norm.data,resolution = param$res)
 
 saveRDS(snn.obj,file = opt$out)
+print('---end---')

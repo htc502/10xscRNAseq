@@ -6,14 +6,13 @@
 #'
 #' Load outputs of cellranger gex matrices into R with Seurat
 #' 
-options(warn = -1)
 ##libraries
-library(optparse)
+suppressMessages({library(optparse)
 library(ggplot2)
 library(readr)
 library(rjson)
-library(Seurat)
-
+library(Seurat)})
+print('----loading cellranger outputs----')
 ##CLI parsing
 option_list = list(
     make_option(c("-c","--param"),
@@ -69,3 +68,4 @@ combined.data[['percent.mito']] = percent.mito
 ##save data
 print("saving output")
 saveRDS(combined.data, file = opt$out)
+print('----end----')

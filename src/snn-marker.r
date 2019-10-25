@@ -8,11 +8,11 @@
 #' 
 
 ##libraries
-library(optparse)
+suppressMessages({library(optparse)
 library(readr)
 library(rjson)
-library(Seurat)
-
+library(Seurat)})
+print('---calculate snn cluster makers---')
 ##CLI parsing
 option_list = list(
     make_option(c("-d", "--data"),
@@ -53,3 +53,4 @@ markers <- FindAllMarkers(object = snn.data,
                           min.pct = param$min.pct,
                           logfc.threshold = param$logfc.threshold)
 write_tsv(data.frame(markers), opt$out)
+print('---end---')

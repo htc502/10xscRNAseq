@@ -6,14 +6,13 @@
 #'
 #' determine number of PCs to use
 #' 
-options(warn = -1)
 print('----determinePC----')
 
 ##libraries
-library(optparse)
+suppressMessages({library(optparse)
 library(readr)
 library(rjson)
-library(Seurat)
+library(Seurat)})
 
 ##CLI parsing
 option_list = list(

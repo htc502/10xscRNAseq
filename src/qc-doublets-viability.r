@@ -8,13 +8,13 @@
 #' 
 
 ##libraries
-library(optparse)
+suppressMessages({library(optparse)
 library(Seurat)
 library(ggplot2)
 library(ggpubr)
 library(rjson)
-library(dplyr)
-
+library(dplyr)})
+print('----QC----')
 option_list = list(
     make_option(c("-d", "--data"),
                 type = "character",
@@ -88,6 +88,6 @@ pdf(opt$out)
 print(combined.gp,height = param$height,
       width = param$width)
 dev.off()
-
+print('----end----')
 
 

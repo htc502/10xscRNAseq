@@ -6,14 +6,13 @@
 #'
 #' run monocle for trajectory analysis
 #' 
-options(warn=-1)
 
-library(optparse)
+suppressMessages{(library(optparse)
 library(readr)
 library(rjson)
 library(Seurat)
-library(monocle)
-
+library(monocle))}
+print('---monocle---')
 ##CLI parsing
 option_list = list(
     make_option(c("-d", "--data"),
@@ -106,4 +105,4 @@ for(i in length(plots))
     print(plots[[i]])
 dev.off()
 saveRDS(cds,file= paste0(opt$`out-prefix`,'.monocleObj.rds'))
-
+print('---end---')

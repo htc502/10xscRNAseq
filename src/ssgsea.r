@@ -6,16 +6,14 @@
 #'
 #' run single cell gsea analysis
 #' 
-options(warn=-1)
-
-library(optparse)
+suppressMessages({library(optparse)
 library(readr)
 library(rjson)
 library(Seurat)
 library(GSVA)
 library('GSEABase');
-library('cogena')
-
+library('cogena')})
+print('---ssgsea---')
 ##CLI parsing
 option_list = list(
     make_option(c("-d", "--data"),
@@ -87,6 +85,6 @@ if(opt$start != -1 & opt$end > opt$start) {
 }
 write_tsv(data.frame(ID = rownames(as.data.frame(gsva.res)),
                      as.data.frame(gsva.res)),path = fname)
-
+print('---end---')
 
 

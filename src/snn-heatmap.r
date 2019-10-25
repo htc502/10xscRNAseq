@@ -8,14 +8,14 @@
 #' 
 
 ##libraries
-library(optparse)
+suppressMessages({library(optparse)
 library(rjson)
 library(Seurat)
 library(ggplot2)
 library(readr)
 library(dplyr)
-library(pheatmap)
-
+library(pheatmap)})
+print('---snn marker heatmap---')
 ##CLI parsing
 option_list = list(
     make_option(c("-d", "--data"),
@@ -109,3 +109,4 @@ if(opt$t) {
     df = data.frame(ID = rownames(mt), mt, stringsAsFactor = F)
     write_tsv(df, file.path(dirname(opt$o),'markersExpression.tsv'))
 }
+print('---end---')

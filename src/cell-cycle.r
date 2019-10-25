@@ -1,9 +1,8 @@
-options(warn = -1)
 print('----cell-cycle----')
-library(optparse)
+suppressMessages({library(optparse)
 library(readr)
 library(rjson)
-library(Seurat)
+library(Seurat)})
 
 ##CLI parsing
 option_list = list(
