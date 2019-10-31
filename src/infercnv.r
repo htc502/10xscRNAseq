@@ -53,8 +53,8 @@ param <- fromJSON(file = opt$param)
 obj <- readRDS(opt$d)
 ##check if only subset of cells are to be used
 cells <- read_tsv(param$celltype,col_names = F) %>%.$X1
-if(! identical(cells, rownames(obj))) {
-    print(paste0('subseting seurat object using cells provided in ',
+if(! identical(cells, colnames(obj))) {
+    print(paste0('Subseting seurat object using cells provided in ',
                  basename(param$celltype)))
     obj = subset(obj, cells = cells)
 }
