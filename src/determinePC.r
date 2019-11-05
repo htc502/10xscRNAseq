@@ -49,7 +49,7 @@ norm.data <- RunPCA(object = norm.data, features = hvg,
 ##generate PCA loadings plot
 pdf(file.path(opt$out))
 VizDimLoadings(object = norm.data, dims = 1:5, reduction = 'pca')
-DimPlot(object = norm.data,reduction = 'pca')
+DimPlot(object = norm.data,reduction = 'pca',group.by = 'orig.ident')
 norm.data <- ProjectDim(object = norm.data,reduction = 'pca')
 DimHeatmap(object = norm.data, dims = 1:12, cells = 500, balanced = TRUE,
            reduction = 'pca')
