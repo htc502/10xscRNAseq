@@ -48,10 +48,11 @@ norm.data <- RunPCA(object = norm.data, features = hvg,
                     verbose = FALSE)
 ##generate PCA loadings plot
 pdf(file.path(opt$out))
-VizDimLoadings(object = norm.data, dims = 1:2)
-DimPlot(object = norm.data)
-norm.data <- ProjectDim(object = norm.data)
-DimHeatmap(object = norm.data, dims = 1:12, cells = 500, balanced = TRUE)
-ElbowPlot(object = norm.data,ndims = 50)
+VizDimLoadings(object = norm.data, dims = 1:5, reduction = 'pca')
+DimPlot(object = norm.data,reduction = 'pca')
+norm.data <- ProjectDim(object = norm.data,reduction = 'pca')
+DimHeatmap(object = norm.data, dims = 1:12, cells = 500, balanced = TRUE,
+           reduction = 'pca')
+ElbowPlot(object = norm.data,ndims = 50,reduction = 'pca')
 dev.off()
 print('----end----')
